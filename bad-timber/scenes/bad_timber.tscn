@@ -1,12 +1,53 @@
-[gd_scene load_steps=11 format=3 uid="uid://bhkkek5mp14bh"]
+[gd_scene load_steps=13 format=3 uid="uid://bhkkek5mp14bh"]
 
 [ext_resource type="Script" uid="uid://bvjihvnm705r1" path="res://scripts/main_scene_logic.gd" id="1_4hsjq"]
-[ext_resource type="Texture2D" uid="uid://dsg54l45fxqrl" path="res://resources/icon.svg" id="2_3em4n"]
 [ext_resource type="PackedScene" uid="uid://cd230exxpo3pn" path="res://scenes/bunny_target.tscn" id="2_ouogn"]
 [ext_resource type="PackedScene" uid="uid://dd862e1gtwq1w" path="res://scenes/deer_target.tscn" id="3_sropk"]
 [ext_resource type="PackedScene" uid="uid://dy6vfmmgpjs5b" path="res://scenes/tree_target.tscn" id="4_opoop"]
+[ext_resource type="PackedScene" uid="uid://mt5j5elcbla5" path="res://scenes/deformed_deer.tscn" id="5_e7vha"]
 [ext_resource type="Texture2D" uid="uid://bbxsitt66p5o6" path="res://resources/back_of_progressPC.png" id="6_opoop"]
+[ext_resource type="PackedScene" uid="uid://cwd32vwiheuv4" path="res://scenes/rotten_tree.tscn" id="6_si15g"]
 [ext_resource type="Texture2D" uid="uid://0y4ly1yf0m7t" path="res://resources/blood_progressPC.png" id="7_16ctv"]
+[ext_resource type="Texture2D" uid="uid://dd463od3k0sae" path="res://resources/grassRow.png" id="7_e7vha"]
+
+[sub_resource type="Animation" id="Animation_16ctv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LeftCurtain:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-643, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RightCurtain:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1280, -2)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("WoodBoard:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-600, -300)]
+}
 
 [sub_resource type="Animation" id="Animation_opoop"]
 resource_name = "game_over_reveal"
@@ -48,45 +89,6 @@ tracks/2/keys = {
 "values": [Vector2(340, -300), Vector2(340, 210)]
 }
 
-[sub_resource type="Animation" id="Animation_16ctv"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("LeftCurtain:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-643, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("RightCurtain:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(1280, -2)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("WoodBoard:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-600, -300)]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_e7vha"]
 _data = {
 &"RESET": SubResource("Animation_16ctv"),
@@ -95,27 +97,29 @@ _data = {
 
 [node name="BadTimber" type="Node2D" node_paths=PackedStringArray("grass_rows")]
 script = ExtResource("1_4hsjq")
-target_scenes = Array[PackedScene]([ExtResource("2_ouogn"), ExtResource("3_sropk"), ExtResource("4_opoop")])
+target_scenes = Array[PackedScene]([ExtResource("2_ouogn"), ExtResource("3_sropk"), ExtResource("4_opoop"), ExtResource("5_e7vha"), ExtResource("6_si15g")])
+move_speed = 200.0
 grass_rows = [NodePath("GrassRow1"), NodePath("GrassRow2"), NodePath("GrassRow3")]
+decay_rate = 1.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
 
 [node name="GrassRow1" type="Sprite2D" parent="."]
 position = Vector2(3.9999995, -3)
-scale = Vector2(10.007812, 1.7578125)
-texture = ExtResource("2_3em4n")
+scale = Vector2(1.7708334, 1)
+texture = ExtResource("7_e7vha")
 centered = false
 
 [node name="GrassRow2" type="Sprite2D" parent="."]
-scale = Vector2(9.984374, 1.7187499)
-texture = ExtResource("2_3em4n")
+scale = Vector2(1.7888889, 1)
+texture = ExtResource("7_e7vha")
 centered = false
 
 [node name="GrassRow3" type="Sprite2D" parent="."]
 position = Vector2(3, 2.0000305)
-scale = Vector2(10.0234375, 1.7265623)
-texture = ExtResource("2_3em4n")
+scale = Vector2(1.7888889, 1)
+texture = ExtResource("7_e7vha")
 centered = false
 
 [node name="SpawnTargetTimer" type="Timer" parent="."]
@@ -123,16 +127,19 @@ centered = false
 [node name="CanvasGroup" type="CanvasGroup" parent="."]
 
 [node name="ScoreLabel" type="Label" parent="CanvasGroup"]
+z_index = 100
 offset_left = 1199.0
-offset_top = 47.0
+offset_top = 505.0
 offset_right = 1275.0
-offset_bottom = 130.0
+offset_bottom = 588.0
+theme_override_font_sizes/font_size = 21
 text = "Score: 0"
 horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="BloodMeter" type="TextureProgressBar" parent="CanvasGroup"]
 z_index = 50
+custom_minimum_size = Vector2(0, 400)
 offset_left = 1211.0
 offset_top = 91.0
 offset_right = 1261.0

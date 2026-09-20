@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://cwd32vwiheuv4"]
+
+[ext_resource type="Script" uid="uid://dqpnw6aheyj5b" path="res://scripts/rotten_tree.gd" id="1_lxexg"]
+[ext_resource type="Texture2D" uid="uid://dsui7djlp6fdt" path="res://resources/rotten_tree.png" id="2_lxexg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uc677"]
+size = Vector2(191, 628)
+
+[node name="Node2D" type="Area2D"]
+script = ExtResource("1_lxexg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(26.125004, -167.75)
+scale = Vector2(0.81152344, 1.2353516)
+texture = ExtResource("2_lxexg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(30.5, -173)
+shape = SubResource("RectangleShape2D_uc677")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]

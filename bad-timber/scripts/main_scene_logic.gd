@@ -18,6 +18,14 @@ var current_meter: float = 50.0
 @export var decay_rate: float  = 5.0
 
 var is_game_over: bool = false
+var is_horror_phase : bool = false
+var waiting_for_targets_clear: bool = false
+
+var deformed_deer: Node2D = null
+var rotten_tree: Node2D = null
+var deer_current_row: int = 0
+var deer_timer: float = 0.0
+var tree_hit_count: int = 0
 
 @onready var score_label = $CanvasGroup/ScoreLabel
 @onready var blood_meter: TextureProgressBar = $CanvasGroup/BloodMeter
@@ -52,32 +60,48 @@ func _process(delta: float) -> void:
 	if is_game_over:
 		return
 	
-	#win-loss conditions
-	if current_meter <= 0.0:
-		trigger_game_over()
+	if not is_horror_phase and not waiting_for_targets_clear:
+		#win-loss conditions
+		if current_meter <= 0.0:
+			trigger_game_over()
+			return
+		elif current_meter>= max_meter:
+			trigger_horror_event_start()
+			return
+		
+		#decay of the meter
+		current_meter -= decay_rate * delta
+		current_meter = clamp(current_meter, 0.0 , max_meter)
+	
+		#updte blood meter
+		if blood_meter:
+			blood_meter.value = current_meter
+	
+	if waiting_for_targets_clear:
+		clean_active_targets()
+		if active_targets.is_empty():
+			waiting_for_targets_clear = false
+			start_horror_event()
+		else:
+			move_normal_targets(delta)
 		return
-	elif current_meter>= max_meter:
-		trigger_horror_event()
+	if is_horror_phase:
+		process_horror_event(delta)
 		return
+	move_normal_targets(delta)
+
+func clean_active_targets() -> void:
+	for i in range(active_targets.size() -1, -1, -1):
+		if not is_instance_valid(active_targets[i]):
+			active_targets.remove_at(i)
 	
-	#decay of the meter
-	current_meter -= decay_rate * delta
-	current_meter = clamp(current_meter, 0.0 , max_meter)
-	
-	#updte blood meter
-	if blood_meter:
-		blood_meter.value = current_meter
-	
-	
-	#target moving logic
+func move_normal_targets(delta: float) -> void:
 	for i in range(active_targets.size() -1, -1, -1):
 		var target = active_targets[i]
-		
 		if not is_instance_valid(target):
 			active_targets.remove_at(i)
 			continue
-		
-		#direction check
+			
 		if abs(target.position.y - row_y_cords[1])<1.0:
 			target.position.x -= move_speed * delta
 			
@@ -90,6 +114,87 @@ func _process(delta: float) -> void:
 			if target. position.x > get_viewport_rect().size.x +100 :
 				active_targets.remove_at(i)
 				target.queue_free()
+
+func trigger_horror_event_start() -> void:
+	$SpawnTargetTimer.stop()
+	waiting_for_targets_clear = true
+
+func start_horror_event() -> void:
+	is_horror_phase = true 
+	deer_current_row = 0
+	deer_timer = 0.0
+	tree_hit_count = 0
+	
+	spawn_deformed_deer()
+	spawn_deformed_tree()
+
+func spawn_deformed_deer() -> void:
+	if target_scenes.size() >3 and target_scenes[3] != null:
+		deformed_deer = target_scenes[3].instantiate()#change later to scene of s_deer as curently its normal deer
+		deformed_deer.position = Vector2(800, row_y_cords[0])
+		deformed_deer.z_index= (0 + 1) * 10 - 5 # 0 is index of row
+		add_child(deformed_deer)
+		
+		if deformed_deer.has_method("setup_target"):
+			deformed_deer.setup_target(self)
+
+func spawn_deformed_tree() -> void:
+	if target_scenes.size() >4 and target_scenes[4] != null:
+		rotten_tree = target_scenes[4].instantiate()#change later to scene of s_tree as curently its normal tree
+		rotten_tree.position = Vector2(400, row_y_cords[2])
+		rotten_tree.z_index= (2 + 1) * 10 - 5 # 2 is index of row
+		add_child(rotten_tree)
+		
+		if rotten_tree.has_method("setup_target"):
+			rotten_tree.setup_target(self)
+
+func process_horror_event(delta: float) -> void:
+	if not is_instance_valid(deformed_deer):
+		return
+	
+	deer_timer += delta
+	if deer_timer >= 3.0:
+		deer_timer = 0.0
+		deer_current_row +=1
+		
+		if deer_current_row < row_y_cords.size():
+			deformed_deer.position.y = row_y_cords[deer_current_row]
+			deformed_deer.z_index = (deer_current_row + 1) *10 -5
+		elif deer_current_row == 3:
+			trigger_jumpscare()
+
+func hit_rotten_tree() -> void:
+	if not is_horror_phase:
+		return
+	tree_hit_count += 1
+	if tree_hit_count == 1:
+		if is_instance_valid(rotten_tree):
+			rotten_tree.rotation_degrees = 45.0
+	elif tree_hit_count >=2:
+		if is_instance_valid(rotten_tree):
+			rotten_tree.rotation_degrees = 90.0
+		trigger_win_sequence()
+
+func trigger_win_sequence() -> void:
+	is_horror_phase = false
+	is_game_over = true
+	
+	if is_instance_valid(deformed_deer):
+		deformed_deer.queue_free()
+	
+	play_game_over_animation("...")
+	
+func trigger_jumpscare() -> void:
+	is_horror_phase = false
+	is_game_over = true
+	
+	if is_instance_valid(deformed_deer):
+		deformed_deer.position = Vector2(450,600)
+		deformed_deer.scale = Vector2(4.0 , 4.0)
+		deformed_deer.z_index = 130
+		
+	await get_tree().create_timer(0.5).timeout
+	get_tree().quit()
 
 func add_score(amount: int) -> void:
 	
@@ -116,9 +221,9 @@ func disable_all_target_input() -> void:
 		if is_instance_valid(target):
 			target.input_pickable = false
 
-func play_game_over_animation() -> void:
+func play_game_over_animation(text: String) -> void:
 	if game_over_label:
-		game_over_label.text = "Game Over\nFinal Score: " + str(score)
+		game_over_label.text = text + "\nFinal Score: " + str(score)
 	if anim_player:
 		anim_player.play("game_over_reveal")
 
@@ -129,15 +234,11 @@ func trigger_game_over() -> void:
 	$SpawnTargetTimer.stop()
 	
 	disable_all_target_input()
-	play_game_over_animation()
+	play_game_over_animation("Game Over")
 
 func _on_restart_button_pressed() -> void:
 	get_tree().reload_current_scene()
 
-func trigger_horror_event() -> void:
-	is_game_over = true
-	$SpawnTargetTimer.stop()
-	
 
 #target spawn logic
 func _on_spawn_timer_timeout() -> void:
