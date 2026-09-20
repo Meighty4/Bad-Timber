@@ -5,7 +5,7 @@ extends Node2D
 @export var move_speed: float = 150.0
 
 #grass row positions
-var row_y_cords : Array[float] = [200.0, 400.0, 600.0]
+var row_y_cords : Array[float] = [200.0, 300.0, 400.0]
 @export var grass_rows: Array[Sprite2D] = []
 
 #all activly shootable targets in a array
@@ -38,11 +38,18 @@ func _process(delta: float) -> void:
 			active_targets.remove_at(i)
 			continue
 		
-		target.position.x += move_speed * delta
-		
-		if target.position.x > get_viewport().size.x:
-			active_targets.remove_at(i)
-			target.queue_free()
+		if abs(target.position.y - row_y_cords[1])<1.0:
+			target.position.x -= move_speed * delta
+			
+			if target. position.x < -100:
+				active_targets.remove_at(i)
+				target.queue_free()
+		else:
+			target.position.x += move_speed * delta
+			
+			if target. position.x > get_viewport_rect().size.x +100 :
+				active_targets.remove_at(i)
+				target.queue_free()
 
 func add_score(amount: int) -> void:
 	score+= amount
@@ -62,11 +69,30 @@ func _on_spawn_timer_timeout() -> void:
 	var spawn_y = row_y_cords[random_row]
 	
 	var new_target = target_scene.instantiate()
-	new_target.position = Vector2(-50, spawn_y)
-	new_target.z_index = ((random_row+1) * 10) - 5
+	
+	#alternating row spawning
+	if random_row ==1:
+		new_target.position = Vector2(get_viewport_rect().size.x, spawn_y)
+		new_target.flip_horizontal(true)
+	else:
+		new_target.position = Vector2(-50, spawn_y)
+	
+	#target type
+	var roll = randi() % 100
+	var target_type = "bunny"
+	
+	if roll<10:
+		target_type = "tree"
+	elif roll < 30:
+		target_type = "deer"
+	
+	#z index for tree is 3 higher than other targets on same row
+	if target_type == "tree":
+		new_target.z_index = ((random_row + 1) * 10) -2
+	else:
+		new_target.z_index = ((random_row + 1) * 10) -5
 	
 	add_child(new_target)
 	active_targets.append(new_target)
 	
-	var is_deer = (randi() % 100) < 20
-	new_target.setup_target(is_deer, self)
+	new_target.setup_target(target_type, self)
