@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://dd862e1gtwq1w"]
+
+[ext_resource type="Script" uid="uid://corl5oxf2xm8a" path="res://scripts/deer_target.gd" id="1_j3gjm"]
+[ext_resource type="Texture2D" uid="uid://gsugylwncphy" path="res://resources/inverted_icon.png" id="2_mpl0k"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_emdst"]
+size = Vector2(123, 123)
+
+[node name="Node2D" type="Area2D"]
+script = ExtResource("1_j3gjm")
+points = 3
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_mpl0k")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_emdst")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]

@@ -1,12 +1,101 @@
-[gd_scene load_steps=4 format=3 uid="uid://bhkkek5mp14bh"]
+[gd_scene load_steps=11 format=3 uid="uid://bhkkek5mp14bh"]
 
 [ext_resource type="Script" uid="uid://bvjihvnm705r1" path="res://scripts/main_scene_logic.gd" id="1_4hsjq"]
 [ext_resource type="Texture2D" uid="uid://dsg54l45fxqrl" path="res://resources/icon.svg" id="2_3em4n"]
-[ext_resource type="PackedScene" uid="uid://bdmqpacrvwlhw" path="res://scenes/target.tscn" id="3_ouogn"]
+[ext_resource type="PackedScene" uid="uid://cd230exxpo3pn" path="res://scenes/bunny_target.tscn" id="2_ouogn"]
+[ext_resource type="PackedScene" uid="uid://dd862e1gtwq1w" path="res://scenes/deer_target.tscn" id="3_sropk"]
+[ext_resource type="PackedScene" uid="uid://dy6vfmmgpjs5b" path="res://scenes/tree_target.tscn" id="4_opoop"]
+[ext_resource type="Texture2D" uid="uid://bbxsitt66p5o6" path="res://resources/back_of_progressPC.png" id="6_opoop"]
+[ext_resource type="Texture2D" uid="uid://0y4ly1yf0m7t" path="res://resources/blood_progressPC.png" id="7_16ctv"]
+
+[sub_resource type="Animation" id="Animation_opoop"]
+resource_name = "game_over_reveal"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LeftCurtain:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1.6333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-643, 0), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RightCurtain:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.6333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1280, 0), Vector2(640, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("WoodBoard:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.9666667, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(340, -300), Vector2(340, 210)]
+}
+
+[sub_resource type="Animation" id="Animation_16ctv"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LeftCurtain:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-643, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RightCurtain:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1280, -2)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("WoodBoard:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-600, -300)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_e7vha"]
+_data = {
+&"RESET": SubResource("Animation_16ctv"),
+&"game_over_reveal": SubResource("Animation_opoop")
+}
 
 [node name="BadTimber" type="Node2D" node_paths=PackedStringArray("grass_rows")]
 script = ExtResource("1_4hsjq")
-target_scene = ExtResource("3_ouogn")
+target_scenes = Array[PackedScene]([ExtResource("2_ouogn"), ExtResource("3_sropk"), ExtResource("4_opoop")])
 grass_rows = [NodePath("GrassRow1"), NodePath("GrassRow2"), NodePath("GrassRow3")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
@@ -29,15 +118,86 @@ scale = Vector2(10.0234375, 1.7265623)
 texture = ExtResource("2_3em4n")
 centered = false
 
-[node name="SpawnTarget_Timer" type="Timer" parent="."]
+[node name="SpawnTargetTimer" type="Timer" parent="."]
 
 [node name="CanvasGroup" type="CanvasGroup" parent="."]
 
 [node name="ScoreLabel" type="Label" parent="CanvasGroup"]
-offset_left = 1185.0
-offset_top = 81.0
-offset_right = 1261.0
-offset_bottom = 164.0
+offset_left = 1199.0
+offset_top = 47.0
+offset_right = 1275.0
+offset_bottom = 130.0
 text = "Score: 0"
 horizontal_alignment = 1
 autowrap_mode = 2
+
+[node name="BloodMeter" type="TextureProgressBar" parent="CanvasGroup"]
+z_index = 50
+offset_left = 1211.0
+offset_top = 91.0
+offset_right = 1261.0
+offset_bottom = 591.0
+step = 0.1
+value = 50.0
+fill_mode = 3
+texture_under = ExtResource("6_opoop")
+texture_progress = ExtResource("7_16ctv")
+texture_progress_offset = Vector2(5, 20)
+
+[node name="LeftCurtain" type="ColorRect" parent="CanvasGroup"]
+z_index = 100
+custom_minimum_size = Vector2(640, 720)
+offset_left = -643.0
+offset_right = -3.0
+offset_bottom = 720.0
+color = Color(0.105882354, 0, 0.1882353, 1)
+
+[node name="RightCurtain" type="ColorRect" parent="CanvasGroup"]
+z_index = 100
+custom_minimum_size = Vector2(640, 720)
+offset_left = 1280.0
+offset_top = -2.0
+offset_right = 1920.0001
+offset_bottom = 718.0
+color = Color(0.3254902, 0.07058824, 0.09411765, 1)
+
+[node name="WoodBoard" type="PanelContainer" parent="CanvasGroup"]
+z_index = 101
+custom_minimum_size = Vector2(600, 300)
+offset_left = -600.0
+offset_top = -300.0
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasGroup/WoodBoard"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasGroup/WoodBoard/MarginContainer"]
+layout_mode = 2
+
+[node name="GameOverLabel" type="Label" parent="CanvasGroup/WoodBoard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 6
+horizontal_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasGroup/WoodBoard/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_bottom = 50
+
+[node name="RestartButton" type="Button" parent="CanvasGroup/WoodBoard/MarginContainer/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+size_flags_vertical = 3
+text = "RESTART"
+icon_alignment = 1
+expand_icon = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasGroup"]
+libraries = {
+&"": SubResource("AnimationLibrary_e7vha")
+}
+
+[connection signal="pressed" from="CanvasGroup/WoodBoard/MarginContainer/VBoxContainer/MarginContainer/RestartButton" to="." method="_on_restart_button_pressed"]

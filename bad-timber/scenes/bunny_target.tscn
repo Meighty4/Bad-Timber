@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cd230exxpo3pn"]
+
+[ext_resource type="Script" uid="uid://0qykstom1sso" path="res://scripts/bunny_target.gd" id="1_81fuk"]
+[ext_resource type="Texture2D" uid="uid://dsg54l45fxqrl" path="res://resources/icon.svg" id="2_wicvo"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wicvo"]
+size = Vector2(121, 121)
+
+[node name="Node2D" type="Area2D"]
+script = ExtResource("1_81fuk")
+points = 100
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_wicvo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_wicvo")
+
+[connection signal="input_event" from="." to="." method="_on_input_event"]
