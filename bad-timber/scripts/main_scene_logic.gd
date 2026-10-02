@@ -1,5 +1,10 @@
 extends Node2D
 
+#crosshair logic vars
+@onready var crosshair: Sprite2D = $CanvasLayer/Crosshair
+var drift_time: float = 0.0
+@export var drift_intensity: float = 80.0
+
 #shoot target scene and speed
 @export var target_scenes: Array[PackedScene] = []
 @export var move_speed: float = 150.0
@@ -31,9 +36,11 @@ var tree_hit_count: int = 0
 @onready var blood_meter: TextureProgressBar = $CanvasGroup/BloodMeter
 @onready var anim_player: AnimationPlayer = $CanvasGroup/AnimationPlayer
 @onready var game_over_label = $CanvasGroup/WoodBoard/MarginContainer/VBoxContainer/GameOverLabel
-
+@onready var background_floor = $GrassRow4
 
 func _ready() -> void:
+	#hiding cursor
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	#forcing the positions of the grass rows
 	for i in range (grass_rows.size()):
 		if i<row_y_cords.size() and is_instance_valid(grass_rows[i]):
@@ -60,6 +67,19 @@ func _process(delta: float) -> void:
 	if is_game_over:
 		return
 	
+	var mouse_pos = get_global_mouse_position()
+	if current_meter >= 80 and current_meter != 100:
+		drift_time += delta * 5
+		var intensity_factor = (current_meter - 80.0) / (max_meter - 80.0)
+		var current_drift_strenght= drift_intensity * intensity_factor
+		
+		var drift_offset = Vector2(
+			sin(drift_time * 2.5)* current_drift_strenght,
+			cos(drift_time * 1.8)* current_drift_strenght
+		)
+		crosshair.global_position = mouse_pos + drift_offset
+	else:
+		crosshair.global_position = mouse_pos
 	if not is_horror_phase and not waiting_for_targets_clear:
 		#win-loss conditions
 		if current_meter <= 0.0:
@@ -101,7 +121,10 @@ func move_normal_targets(delta: float) -> void:
 		if not is_instance_valid(target):
 			active_targets.remove_at(i)
 			continue
-			
+		
+		if "is_hit" in target and target.is_hit:
+			continue
+		
 		if abs(target.position.y - row_y_cords[1])<1.0:
 			target.position.x -= move_speed * delta
 			
@@ -130,6 +153,7 @@ func start_horror_event() -> void:
 
 func spawn_deformed_deer() -> void:
 	if target_scenes.size() >3 and target_scenes[3] != null:
+		background_floor.visible = true
 		deformed_deer = target_scenes[3].instantiate()#change later to scene of s_deer as curently its normal deer
 		deformed_deer.position = Vector2(800, row_y_cords[0])
 		deformed_deer.z_index= (0 + 1) * 10 - 5 # 0 is index of row

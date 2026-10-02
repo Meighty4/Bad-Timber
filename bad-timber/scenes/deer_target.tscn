@@ -1,21 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://dd862e1gtwq1w"]
+[gd_scene load_steps=5 format=3 uid="uid://dd862e1gtwq1w"]
 
 [ext_resource type="Script" uid="uid://corl5oxf2xm8a" path="res://scripts/deer_target.gd" id="1_j3gjm"]
+[ext_resource type="PackedScene" uid="uid://p35al1upphru" path="res://scenes/score_popup.tscn" id="2_emdst"]
 [ext_resource type="Texture2D" uid="uid://dwy80fwhlhn3b" path="res://resources/deer.png" id="2_mpl0k"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_emdst"]
-size = Vector2(139, 201.5)
+size = Vector2(169, 207.5)
 
 [node name="Node2D" type="Area2D"]
 script = ExtResource("1_j3gjm")
 points = 5
+score_popup_scene = ExtResource("2_emdst")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(9, -46)
 texture = ExtResource("2_mpl0k")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(17.5, -39.25)
+position = Vector2(14.5, -42.25)
 shape = SubResource("RectangleShape2D_emdst")
 
 [connection signal="input_event" from="." to="." method="_on_input_event"]
