@@ -25,6 +25,7 @@ var current_meter: float = 50.0
 var is_game_over: bool = false
 var is_horror_phase : bool = false
 var waiting_for_targets_clear: bool = false
+var is_game_started: bool = false
 
 var deformed_deer: Node2D = null
 var rotten_tree: Node2D = null
@@ -38,11 +39,27 @@ var is_deer_animating: bool = false
 @onready var anim_player: AnimationPlayer = $CanvasGroup/AnimationPlayer
 @onready var game_over_label = $CanvasGroup/WoodBoard/MarginContainer/VBoxContainer/GameOverLabel
 @onready var background_floor = $GrassRow4
+@onready var Rcurtain = $CanvasGroup/RightCurtain
+@onready var Lcurtain = $CanvasGroup/LeftCurtain
+var scream_sfx = preload("res://resources/deer_scream.mp3")
+
+@onready var bgm_player: AudioStreamPlayer = $AudioStreamPlayer2D
+
+@export_group("Audio Streams")
+@export var start_click_sfx: AudioStream
+@export var normal_loop_bgm: AudioStream
+@export var breakdown_sfx: AudioStream
+@export var horror_ambience_bgm: AudioStream
+@export var tree_fall: AudioStream
 
 func _ready() -> void:
 	#hiding cursor
 	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
 	background_floor.modulate.a = 0.0 
+	
+	#stoping the spawning
+	$SpawnTargetTimer.stop()
+	
 	#forcing the positions of the grass rows
 	for i in range (grass_rows.size()):
 		if i<row_y_cords.size() and is_instance_valid(grass_rows[i]):
@@ -63,10 +80,30 @@ func _ready() -> void:
 	
 	#starts the target spawn timer
 	$SpawnTargetTimer.timeout.connect(_on_spawn_timer_timeout)
+	#$SpawnTargetTimer.start()
+
+func _input(event:InputEvent) -> void:
+	if not is_game_started:
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
+			start_game_first_time()
+
+func start_game_first_time() -> void:
+	is_game_started = true
+	
+	bgm_player.stream = start_click_sfx
+	bgm_player.play()
+	await bgm_player.finished
+	
+	bgm_player.stream = normal_loop_bgm
+	bgm_player.play()
+	
+	if anim_player.has_animation("start_game"):
+		anim_player.play("start_game")
+		await anim_player.animation_finished
 	$SpawnTargetTimer.start()
 
 func _process(delta: float) -> void:
-	if is_game_over:
+	if not is_game_started or is_game_over:
 		crosshair.global_position = get_global_mouse_position()
 		return
 	
@@ -147,6 +184,8 @@ func trigger_horror_event_start() -> void:
 	
 	disable_all_target_input()
 	waiting_for_targets_clear = true
+	
+	play_horror_audio_sequence()
 	clear_and_dismiss_active_targets()
 
 func clear_and_dismiss_active_targets() -> void:
@@ -189,7 +228,13 @@ func start_horror_event() -> void:
 	await get_tree().create_timer(2.0).timeout
 	spawn_deformed_deer()
 	spawn_deformed_tree()
-	
+
+func play_horror_audio_sequence() -> void:
+	bgm_player.stream = breakdown_sfx
+	bgm_player.play()
+	await bgm_player.finished 
+	bgm_player.stream = horror_ambience_bgm
+	bgm_player.play()
 
 func spawn_deformed_deer() -> void:
 	if target_scenes.size() >3 and target_scenes[3] != null:
@@ -259,6 +304,8 @@ func hit_rotten_tree() -> void:
 	elif tree_hit_count >=2:
 		if is_instance_valid(rotten_tree):
 			rotten_tree.rotation_degrees = 90.0
+		bgm_player.stream = tree_fall
+		bgm_player.play()
 		trigger_win_sequence()
 
 func trigger_win_sequence() -> void:
@@ -277,10 +324,18 @@ func trigger_jumpscare() -> void:
 	if is_instance_valid(deformed_deer):
 		deformed_deer.position = Vector2(450,600)
 		deformed_deer.scale = Vector2(4.0 , 4.0)
-		deformed_deer.z_index = 130
-		
-	await get_tree().create_timer(0.5).timeout
-	get_tree().quit()
+		deformed_deer.z_index = 43
+		var audio_player = AudioStreamPlayer.new()
+		# 2. Assign the preloaded sound file to it
+		audio_player.stream = scream_sfx
+		# 3. Add it to the scene tree so it can process audio
+		add_child(audio_player)
+		# 4. Play the sound
+		audio_player.play()
+		# 5. Automatically delete the node from memory once the sound finishes
+		audio_player.finished.connect(audio_player.queue_free)
+	await get_tree().create_timer(3).timeout
+	play_game_over_animation("BOO!")
 
 func add_score(amount: int) -> void:
 	
@@ -327,6 +382,8 @@ func _on_restart_button_pressed() -> void:
 
 #target spawn logic
 func _on_spawn_timer_timeout() -> void:
+	if not is_game_started or is_game_over:
+		return
 	if target_scenes.is_empty():
 		return
 	

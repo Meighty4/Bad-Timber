@@ -9,7 +9,7 @@ size = Vector2(129, 182)
 
 [node name="Node2D" type="Area2D"]
 script = ExtResource("1_81fuk")
-points = 50
+points = 3
 score_popup_scene = ExtResource("2_a063d")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

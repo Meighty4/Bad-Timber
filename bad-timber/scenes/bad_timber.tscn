@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bhkkek5mp14bh"]
+[gd_scene load_steps=27 format=3 uid="uid://bhkkek5mp14bh"]
 
 [ext_resource type="Script" uid="uid://bvjihvnm705r1" path="res://scripts/main_scene_logic.gd" id="1_4hsjq"]
 [ext_resource type="PackedScene" uid="uid://cd230exxpo3pn" path="res://scenes/bunny_target.tscn" id="2_ouogn"]
@@ -9,13 +9,19 @@
 [ext_resource type="PackedScene" uid="uid://cwd32vwiheuv4" path="res://scenes/rotten_tree.tscn" id="6_si15g"]
 [ext_resource type="Texture2D" uid="uid://0y4ly1yf0m7t" path="res://resources/blood_progressPC.png" id="7_16ctv"]
 [ext_resource type="Texture2D" uid="uid://dd463od3k0sae" path="res://resources/grassRow.png" id="7_e7vha"]
+[ext_resource type="AudioStream" uid="uid://csb311otcsdwy" path="res://resources/freesound_community-windingoldalarmclock-100693.mp3" id="7_l2agr"]
 [ext_resource type="Texture2D" uid="uid://bf5ouscc8kr1g" path="res://resources/clouds_bg.png" id="7_si15g"]
+[ext_resource type="AudioStream" uid="uid://nwxb00bdtu0l" path="res://resources/freesound_community-old-mechanical-music-machine-from-spain-79019.mp3" id="8_23hnj"]
+[ext_resource type="AudioStream" uid="uid://bk2ms68gv4i5x" path="res://resources/break.mp3" id="9_avvp2"]
+[ext_resource type="AudioStream" uid="uid://bu35pno8pj6mj" path="res://resources/scary_woods.mp3" id="10_n6qxh"]
+[ext_resource type="AudioStream" uid="uid://ddapk3tlvdefl" path="res://resources/heavy-boulder-thud.mp3" id="11_23hnj"]
 [ext_resource type="Texture2D" uid="uid://beaxinuktxhd5" path="res://resources/right_curtain.png" id="11_fj650"]
 [ext_resource type="Texture2D" uid="uid://cuuuhadesnod8" path="res://resources/cuirsor.png" id="11_pr2yo"]
 [ext_resource type="Texture2D" uid="uid://bru8luwyqshap" path="res://resources/left_curtain.png" id="12_vsswa"]
 [ext_resource type="Texture2D" uid="uid://c1w5kvpvgsjuh" path="res://resources/wooden_board.png" id="14_1a228"]
 [ext_resource type="Texture2D" uid="uid://8smrchvwi7uw" path="res://resources/frame.png" id="14_vsswa"]
 [ext_resource type="FontFile" uid="uid://cicdm6x6pgytd" path="res://resources/Chango-Regular.ttf" id="15_n0dep"]
+[ext_resource type="Texture2D" uid="uid://ddcfde2nmphas" path="res://resources/front_of_progressPC.png" id="18_avvp2"]
 
 [sub_resource type="Animation" id="Animation_16ctv"]
 length = 0.001
@@ -29,7 +35,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-800, 0)]
+"values": [Vector2(0, 0)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -41,7 +47,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(800, 0)]
+"values": [Vector2(0, 0)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -65,7 +71,31 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [false]
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("TextureRect2:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("PanelContainer:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(532, 560)]
 }
 
 [sub_resource type="Animation" id="Animation_opoop"]
@@ -119,11 +149,88 @@ tracks/3/keys = {
 "update": 1,
 "values": [true]
 }
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("TextureRect2:modulate")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_1a228"]
+resource_name = "start_game"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LeftCurtain:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-800, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RightCurtain:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(800, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("TextureRect2:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("TextureRect2:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(2, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("PanelContainer:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(1, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(532, 730), Vector2(532, 560)]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_e7vha"]
 _data = {
 &"RESET": SubResource("Animation_16ctv"),
-&"game_over_reveal": SubResource("Animation_opoop")
+&"game_over_reveal": SubResource("Animation_opoop"),
+&"start_game": SubResource("Animation_1a228")
 }
 
 [node name="BadTimber" type="Node2D" node_paths=PackedStringArray("grass_rows")]
@@ -132,6 +239,11 @@ target_scenes = Array[PackedScene]([ExtResource("2_ouogn"), ExtResource("3_sropk
 move_speed = 300.0
 grass_rows = [NodePath("GrassRow1"), NodePath("GrassRow2"), NodePath("GrassRow3")]
 decay_rate = 1.0
+start_click_sfx = ExtResource("7_l2agr")
+normal_loop_bgm = ExtResource("8_23hnj")
+breakdown_sfx = ExtResource("9_avvp2")
+horror_ambience_bgm = ExtResource("10_n6qxh")
+tree_fall = ExtResource("11_23hnj")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
@@ -170,7 +282,7 @@ centered = false
 [node name="CanvasGroup" type="CanvasGroup" parent="."]
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasGroup"]
-z_index = 60
+z_index = 42
 custom_minimum_size = Vector2(200, 100)
 offset_left = 532.0
 offset_top = 560.0
@@ -211,27 +323,24 @@ step = 0.1
 value = 50.0
 fill_mode = 3
 texture_under = ExtResource("6_opoop")
+texture_over = ExtResource("18_avvp2")
 texture_progress = ExtResource("7_16ctv")
-texture_progress_offset = Vector2(5, 80)
 
 [node name="RightCurtain" type="TextureRect" parent="CanvasGroup"]
 z_index = 100
 custom_minimum_size = Vector2(640, 720)
-offset_left = 800.0
-offset_right = 2080.0
+offset_right = 1280.0
 offset_bottom = 720.0
 texture = ExtResource("11_fj650")
 
 [node name="LeftCurtain" type="TextureRect" parent="CanvasGroup"]
 z_index = 100
 custom_minimum_size = Vector2(640, 720)
-offset_left = -800.0
-offset_right = 480.0
+offset_right = 1280.0
 offset_bottom = 720.0
 texture = ExtResource("12_vsswa")
 
 [node name="TextureRect2" type="TextureRect" parent="CanvasGroup"]
-visible = false
 z_index = 200
 offset_right = 1280.0
 offset_bottom = 720.0
@@ -289,5 +398,7 @@ libraries = {
 [node name="Crosshair" type="Sprite2D" parent="CanvasLayer"]
 z_index = 999
 texture = ExtResource("11_pr2yo")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer" parent="."]
 
 [connection signal="pressed" from="CanvasGroup/WoodBoard/MarginContainer/VBoxContainer/MarginContainer/RestartButton" to="." method="_on_restart_button_pressed"]
